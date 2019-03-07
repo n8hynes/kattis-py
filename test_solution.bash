@@ -76,7 +76,7 @@ function main {
 				fi
 				rm "output"
 				rm "error"
-				let x+=1
+				x=$((x+1))
 			done
 		else
 			echo "There are no sample files to test!"
