@@ -39,7 +39,7 @@ function main {
 				if [[ -z ${1} ]]; then 
 					break
 				elif [[ -z ${problem} ]]; then
-					problem="${1}"
+					problem="${1,,}"
 				else
 					die "Unknown option: ${1}\n${__USAGE__}"
 				fi
