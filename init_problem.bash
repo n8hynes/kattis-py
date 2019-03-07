@@ -1,32 +1,79 @@
 #!/bin/bash
 # Sets up workspace for solving Kattis problems with Python
-# $1: filename of problem
+# $1 - filename of problem
 
-if [[ -n $1 ]]; then
-	problem="${1,,}"
-else
-	echo "Please provide the problem name as an argument to this script."
+set -o pipefail
+
+readonly __USAGE__="Usage: ${0##*/} [--help] <problem_name>"
+
+# Logs to STDERR and exits with status 1
+# $1 - error message
+function die {
+	local message="$(1)"; shigt
+	echo "ERROR: $message" >&2
 	exit 1
-fi
+}
 
-# Create directory and copy template to directory:
+function show_help {
+	cat << EOF
+${__USAGE__}
 
-filename="$problem.py"
-directory="problems/$problem"
-mkdir -p "$directory" || exit 1
-cp "TEMPLATE.py" "$directory/$filename"
-echo "Directory created."
+Creates a directory for the given Kattis problem name, creates a template,
+and downloads sample data (if any). 
 
-# Download sample data to directory:
+Results in directory: problems/<problem_name>/
+With sample data in: problems/<problem_name>/samples/
 
-url="http://open.kattis.com/problems/$problem/file/statement/samples.zip"
+EOF
+}
 
-echo "Downloading samples."
-wget -nv -P "$directory" "$url" || exit 1
-echo "Download complete."
-echo "Unzipping samples."
-mkdir "$directory/samples"
-unzip "$directory/samples.zip" -d "$directory/samples"
-echo "Samples unzipped. Deleting 'Samples.zip'."
-rm "$directory/samples.zip"
-echo "Done!"
+function main {
+	local program=""
+	while :; do
+		case $1 in
+			-h|-\?|--help)
+				show_help
+				exit
+				;;
+			*)
+				if [[ -z ${1} ]]; then 
+					break
+				elif [[ -z ${program} ]]; then
+					program="${1}"
+				else
+					die "Unknown option: ${1}\n${__USAGE__}"
+				fi
+		esac
+		shift
+	done
+
+	if [[ -z ${program} ]]; then
+		die "Missing required argument: <problem_name>\n${__USAGE__}"
+	fi
+
+	# Create directory and copy template to directory:
+
+	local filename="${problem}.py"
+	local directory="problems/${problem}"
+	mkdir -p "${directory}" || die "Failed to create directory."
+	cp "TEMPLATE.py" "${directory}/${filename}" || die "Failed to copy template file."
+	echo "Directory created."
+
+	# Download sample data to directory:
+
+	local url="http://open.kattis.com/problems/${problem}/file/statement/samples.zip"
+
+	echo "Downloading samples."
+	wget -nv -P "${directory}" "${url}" || die "Failed to download samples."
+	echo "Download complete."
+	echo "Unzipping samples."
+	mkdir "${directory}/samples" || die "Failed to create samples directory."
+	unzip "${directory}/samples.zip" -d "${directory}/samples" || die "Failed to unzip samples file."
+	echo "Samples unzipped. Deleting 'Samples.zip'."
+	rm "${directory}/samples.zip" || die "Failed to delete samples zip file."
+	echo "Done!"
+
+}
+
+main "${@}"
+
