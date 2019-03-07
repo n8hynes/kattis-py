@@ -4,13 +4,13 @@
 
 set -o pipefail
 
-readonly __USAGE__="Usage: ${0##*/} [--help] <problem_name>"
+readonly __USAGE__="Usage: ./${0##*/} [--help] <problem_name>"
 
 # Logs to STDERR and exits with status 1
 # $1 - error message
 function die {
-	local message="$(1)"; shigt
-	echo "ERROR: $message" >&2
+	local message="${1}"; shift
+	echo -e "ERROR: ${message}" >&2
 	exit 1
 }
 
