@@ -28,7 +28,7 @@ EOF
 }
 
 function main {
-	local program=""
+	local problem=""
 	while :; do
 		case $1 in
 			-h|-\?|--help)
@@ -38,8 +38,8 @@ function main {
 			*)
 				if [[ -z ${1} ]]; then 
 					break
-				elif [[ -z ${program} ]]; then
-					program="${1}"
+				elif [[ -z ${problem} ]]; then
+					problem="${1}"
 				else
 					die "Unknown option: ${1}\n${__USAGE__}"
 				fi
@@ -47,7 +47,7 @@ function main {
 		shift
 	done
 
-	if [[ -z ${program} ]]; then
+	if [[ -z ${problem} ]]; then
 		die "Missing required argument: <problem_name>\n${__USAGE__}"
 	fi
 
