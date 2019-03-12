@@ -19,7 +19,11 @@ function show_help {
 
 ${__USAGE__}
 
-Help text here
+Runs the given program with the sample inputs, 
+and compares against the sample outputs.
+
+Copies .py contents to clipboard, when all
+tests are successful.
 
 EOF
 }
@@ -49,6 +53,7 @@ function main {
 	fi
 
 	local directory="problems/${problem}"
+	local success=true
 
 	if [[ -d "${directory}" ]]; then
 		cd "${directory}" || die "Cannot navigate to directory"
@@ -63,6 +68,7 @@ function main {
 					echo -e "\nTEST ${x}: RUNTIME ERROR"
 					echo "STDERR:"
 					cat "error"
+					success=false
 				elif ! cmp -s "output" "${i:0:-3}.ans"; then
 					echo -e "\nTEST ${x}: FAIL"
 					echo "STDERR:"
@@ -71,6 +77,7 @@ function main {
 					cat "output"
 					echo "EXPECTED:"
 					cat "${i:0:-3}.ans"
+					success=false
 				else
 					echo -e "\nTEST ${x}: PASS"
 				fi
@@ -80,6 +87,11 @@ function main {
 			done
 		else
 			echo "There are no sample files to test!"
+		fi
+		if [[ $success = true ]]; then
+			echo -e  "\nAll tests successful."
+			termux-clipboard-set < "${problem}.py"
+			echo "Code saved to clipboard."
 		fi
 	else
 		echo "No such problem to test."
