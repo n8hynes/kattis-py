@@ -72,7 +72,7 @@ function main {
 	echo "Samples unzipped. Deleting 'Samples.zip'."
 	rm "${directory}/samples.zip" || die "Failed to delete samples zip file."
 	echo "Done!"
-
+	vim "${directory}/${filename}"
 }
 
 main "${@}"
