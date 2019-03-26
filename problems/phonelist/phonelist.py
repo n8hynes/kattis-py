@@ -1,10 +1,15 @@
 import sys
+import itertools
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def check_phone_nums(x, y):
-    if (x.find(y) == 0) or (y.find(x) == 0): return False
+def consistency_check(num_1, num_2):
+    """ 
+    Checks if 2 phone numbers are inconsistent.
+    Requires len(num_1) <= len(num_2)
+    """
+    if (num_2[:len(num_1)] == num_1): return False
     else: return True
 
 def main():
@@ -14,14 +19,18 @@ def main():
         num_list = []
         consistent = True
         for __ in range(n):
-            num = sys.stdin.readline().rstrip()
-            for x in num_list:
-                # eprint(f"Checking {x} vs {num}: {check_phone_nums(x,num)}")
-                if not check_phone_nums(x,num): consistent = False
-            num_list.append(num)
-        if consistent: print("YES")
+            new_num = sys.stdin.readline().rstrip()
+            num_list.append(new_num)
+        num_list.sort(key = len)
+        consistent = True
+        for pair in itertools.product(num_list, repeat=2):
+            if (pair[0] == pair[1]): continue
+            eprint(f"Checking {pair}")
+            if consistency_check(*pair) == False:
+                consistent = False
+                break
+        if(consistent): print("YES")
         else: print("NO")
-
 
 main()
 
