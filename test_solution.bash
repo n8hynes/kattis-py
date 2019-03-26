@@ -4,7 +4,7 @@
 
 set -o pipefail
 
-readonly __USAGE__="Usage: ./${0##*/} [--help] <problem_name>"
+readonly __USAGE__="Usage: ./${0##*/} [--help] [problem_name]"
 
 # Logs to STDERR and exits with status 1
 # $1 - error message
@@ -21,6 +21,9 @@ ${__USAGE__}
 
 Runs the given program with the sample inputs, 
 and compares against the sample outputs.
+
+Takes problem name from current git branch,
+if not provided.
 
 Copies .py contents to clipboard, when all
 tests are successful.
@@ -49,7 +52,10 @@ function main {
 	done
 
 	if [[ -z ${problem} ]]; then
-		die "Missing required argument: <problem_name>\n${__USAGE__}"
+		problem=$(git symbolic-ref --short -q HEAD) || die "Failed to get git branch"
+		if [[ $problem == "master" ]]; then
+			die "On branch master. Create a new branch or provide the problem name.\n${__USAGE__}"
+		fi
 	fi
 
 	local directory="problems/${problem}"

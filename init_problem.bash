@@ -4,7 +4,7 @@
 
 set -o pipefail
 
-readonly __USAGE__="Usage: ./${0##*/} [--help] <problem_name>"
+readonly __USAGE__="Usage: ./${0##*/} [--help] [problem_name]"
 
 # Logs to STDERR and exits with status 1
 # $1 - error message
@@ -20,6 +20,8 @@ ${__USAGE__}
 
 Creates a directory for the given Kattis problem name, creates a template,
 and downloads sample data (if any). 
+
+Takes problem name from the current git branch, if not provided.
 
 Results in directory: problems/<problem_name>/
 With sample data in: problems/<problem_name>/samples/
@@ -48,7 +50,10 @@ function main {
 	done
 
 	if [[ -z ${problem} ]]; then
-		die "Missing required argument: <problem_name>\n${__USAGE__}"
+		problem=$(git symbolic-ref --short -q HEAD) || die "Failed to get git branch"
+		if [[ $problem == "master" ]]; then
+			die "On branch master. Create a new branch or provide the problem name.\n${__USAGE__}"
+		fi
 	fi
 
 	# Create directory and copy template to directory:
