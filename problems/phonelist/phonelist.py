@@ -12,25 +12,37 @@ def consistency_check(num_1, num_2):
     if (num_2[:len(num_1)] == num_1): return False
     else: return True
 
+def check_num_list(nums):
+    """
+    Checks each pair of items in the list for consistency.
+    """
+    consistent = True
+    nums.sort(key = len)
+    for x in range(len(nums)):
+        for y in range(x + 1, len(nums)):
+            if not consistency_check(nums[x], nums[y]):
+                consistent = False
+                break
+        if not consistent: break
+    return consistent
+
+
 def main():
     t = int(sys.stdin.readline())
     for _ in range(t):
         n = int(sys.stdin.readline())
-        num_list = []
+        num_list = [[] for x in range(10)]
         consistent = True
-        for __ in range(n):
+        for _ in range(n):
             new_num = sys.stdin.readline().rstrip()
-            num_list.append(new_num)
-        num_list.sort(key = len)
-        consistent = True
-        for pair in itertools.product(num_list, repeat=2):
-            if (pair[0] == pair[1]) or (len(pair[0]) > len(pair[1])): continue
-            # eprint(f"Checking {pair}")
-            if consistency_check(*pair) == False:
-                consistent = False
-                break
-        if(consistent): print("YES")
+            num_list[int(new_num[0])].append(new_num)
+        for bucket in num_list:
+            consistent = check_num_list(bucket)
+            if not consistent: break
+        if consistent: print("YES")
         else: print("NO")
+            
+            
 
 main()
 
