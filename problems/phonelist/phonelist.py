@@ -24,8 +24,8 @@ def main():
         num_list.sort(key = len)
         consistent = True
         for pair in itertools.product(num_list, repeat=2):
-            if (pair[0] == pair[1]): continue
-            eprint(f"Checking {pair}")
+            if (pair[0] == pair[1]) or (len(pair[0]) > len(pair[1])): continue
+            # eprint(f"Checking {pair}")
             if consistency_check(*pair) == False:
                 consistent = False
                 break
